@@ -43,7 +43,7 @@ public final class MyStrategy implements Strategy {
                 throw new IllegalArgumentException("Unsupported stance: " + self.getStance() + '.');
             }
         }
-        /*
+        /*This is commented just for easier debug
         //TODO write class-specific behavior
         switch (self.getType()){
             //TODO teach medic to come closer to injured teammates
