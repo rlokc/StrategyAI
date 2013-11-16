@@ -1,10 +1,10 @@
 import model.*;
 
-import java.util.ArrayList;
-import java.util.Random;
+//import java.util.ArrayList;
+//import java.util.Random;
 
 public final class MyStrategy implements Strategy {
-    private final Random random = new Random();
+    //private final Random random = new Random();
     //public int apprPos;
     int[] xDest = new int[2];
     int[] yDest = new int[2];
@@ -43,7 +43,7 @@ public final class MyStrategy implements Strategy {
                 throw new IllegalArgumentException("Unsupported stance: " + self.getStance() + '.');
             }
         }
-        /*This is commented just for easier debug
+
         //TODO write class-specific behavior
         switch (self.getType()){
             //TODO teach medic to come closer to injured teammates
@@ -52,25 +52,47 @@ public final class MyStrategy implements Strategy {
                     if (currTrooper.isTeammate()&&currTrooper.getHitpoints()<75){
                         if (currTrooper.getX()-self.getX()==1&&currTrooper.getY()==self.getY()){
                             move.setDirection(Direction.EAST);
-                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                move.setAction(ActionType.HEAL);
+                            if (currTrooper.getHitpoints()<=70){
+                                move.setAction(ActionType.USE_MEDIKIT);
+                            }else{
+                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                    move.setAction(ActionType.HEAL);
+                                }
                             }
                         }else if (currTrooper.getX()-self.getX()==-1&&currTrooper.getY()==self.getY()){
                             move.setDirection(Direction.WEST);
-                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                move.setAction(ActionType.HEAL);
+                            if (currTrooper.getHitpoints()<=70){
+                                move.setAction(ActionType.USE_MEDIKIT);
+                            }else{
+                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                    move.setAction(ActionType.HEAL);
+                                }
                             }
                         }else if (currTrooper.getY()-self.getY()==1&&currTrooper.getX()==self.getX()){
                             move.setDirection(Direction.SOUTH);
-                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                move.setAction(ActionType.HEAL);
+                            if (currTrooper.getHitpoints()<=70){
+                                move.setAction(ActionType.USE_MEDIKIT);
+                            }else{
+                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                    move.setAction(ActionType.HEAL);
+                                }
                             }
                         }else if (currTrooper.getY()-self.getY()==-1&&currTrooper.getX()==self.getX()){
                             move.setDirection(Direction.NORTH);
-                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                move.setAction(ActionType.HEAL);
+                            if (currTrooper.getHitpoints()<=70){
+                                move.setAction(ActionType.USE_MEDIKIT);
+                            }else{
+                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                    move.setAction(ActionType.HEAL);
+                                }
                             }
                         }else{
+                            if (self.getHitpoints()<=97){
+                                move.setDirection(Direction.CURRENT_POINT);
+                                while (currTrooper.getHitpoints()<=97||self.getActionPoints()>0){
+                                    move.setAction(ActionType.HEAL);
+                                }
+                            }
                             //Keep calm and stand still
                         }
                     }
@@ -87,14 +109,13 @@ public final class MyStrategy implements Strategy {
                 throw new IllegalArgumentException("Unsupported trooper type.");
             }
 
-        }*/
+        }
+
         while (self.getActionPoints() >= stanceKey) {
 
             if (self.getActionPoints() >= self.getShootCost()) {
 
-                for (int i = 0; i < troopers.length; ++i) {
-                    Trooper trooper = troopers[i];
-
+                for (Trooper trooper : troopers) {
                     boolean canShoot = world.isVisible(self.getShootingRange(),
                             self.getX(), self.getY(), self.getStance(),
                             trooper.getX(), trooper.getY(), trooper.getStance()
@@ -111,17 +132,19 @@ public final class MyStrategy implements Strategy {
 
             //TODO movement in case of unpassable terrain
             move.setAction(ActionType.MOVE);
-            if ((xDest[0]-self.getX())>(yDest[0]-self.getY())&&yDest[0]-self.getY()<0) {
-                if (cells[self.getX()][self.getY()-1]==CellType.FREE) {
-                    move.setDirection(Direction.NORTH);
+            if ((xDest[0]-self.getX())>(yDest[0]-self.getY())&&xDest[0]-self.getX()<0) {
+                if (cells[self.getX()-1][self.getY()]==CellType.FREE) {
+                    move.setDirection(Direction.WEST);
                 }
-            }else if ((xDest[0]-self.getX())>(yDest[0]-self.getY())&&yDest[0]-self.getY()>0){
+            }else if ((xDest[0]-self.getX())>(yDest[0]-self.getY())&&xDest[0]-self.getX()>0){
                 if (cells[self.getX()+1][self.getY()]==CellType.FREE) {
                     move.setDirection(Direction.EAST);
                 }
-            }else if ((xDest[0]-self.getX())<(yDest[0]-self.getY())&&xDest[0]-self.getX()<0){
-                if (cells[self.getX()-1][self.getY()-1]==CellType.FREE) {
-                    move.setDirection(Direction.WEST);
+            }else if ((xDest[0]-self.getX())<(yDest[0]-self.getY())&&yDest[0]-self.getY()<0){
+                if (cells[self.getX()][self.getY()-1]==CellType.FREE) {
+                    move.setDirection(Direction.NORTH);
+                }else{
+                    //Move somewhere else
                 }
             }else {
                 if (cells[self.getX()][self.getY()+1]==CellType.FREE) {
