@@ -35,6 +35,9 @@ public final class MyStrategy implements Strategy {
             yDest[0]=5;
         }
 
+        /*
+        @code stanceKey goes as movement cost as well
+         */
         switch (self.getStance()) {
             case PRONE:{stanceKey = 6;break;}
             case KNEELING:{stanceKey = 4;break;}
@@ -52,39 +55,24 @@ public final class MyStrategy implements Strategy {
                     if (currTrooper.isTeammate()&&currTrooper.getHitpoints()<75){
                         if (currTrooper.getX()-self.getX()==1&&currTrooper.getY()==self.getY()){
                             move.setDirection(Direction.EAST);
-                            if (currTrooper.getHitpoints()<=70){
-                                move.setAction(ActionType.USE_MEDIKIT);
-                            }else{
-                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                    move.setAction(ActionType.HEAL);
-                                }
+                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                move.setAction(ActionType.HEAL);
+                            }
                             }
                         }else if (currTrooper.getX()-self.getX()==-1&&currTrooper.getY()==self.getY()){
                             move.setDirection(Direction.WEST);
-                            if (currTrooper.getHitpoints()<=70){
-                                move.setAction(ActionType.USE_MEDIKIT);
-                            }else{
-                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                    move.setAction(ActionType.HEAL);
-                                }
+                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                move.setAction(ActionType.HEAL);
                             }
                         }else if (currTrooper.getY()-self.getY()==1&&currTrooper.getX()==self.getX()){
                             move.setDirection(Direction.SOUTH);
-                            if (currTrooper.getHitpoints()<=70){
-                                move.setAction(ActionType.USE_MEDIKIT);
-                            }else{
-                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                    move.setAction(ActionType.HEAL);
-                                }
+                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                move.setAction(ActionType.HEAL);
                             }
                         }else if (currTrooper.getY()-self.getY()==-1&&currTrooper.getX()==self.getX()){
                             move.setDirection(Direction.NORTH);
-                            if (currTrooper.getHitpoints()<=70){
-                                move.setAction(ActionType.USE_MEDIKIT);
-                            }else{
-                                while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
-                                    move.setAction(ActionType.HEAL);
-                                }
+                            while (currTrooper.getHitpoints()<=95||self.getActionPoints()>0){
+                                move.setAction(ActionType.HEAL);
                             }
                         }else{
                             if (self.getHitpoints()<=97){
@@ -96,8 +84,6 @@ public final class MyStrategy implements Strategy {
                             //Keep calm and stand still
                         }
                     }
-                }
-
                 break;
             }
             case SOLDIER:break;
@@ -111,6 +97,16 @@ public final class MyStrategy implements Strategy {
 
         }
 
+        //Do we really need to set direction here?
+        if (self.isHoldingMedikit()&&self.getHitpoints()<=70){
+            move.setAction(ActionType.USE_MEDIKIT);
+            move.setDirection(Direction.CURRENT_POINT);
+        }
+        if (self.isHoldingFieldRation()){
+            move.setAction(ActionType.EAT_FIELD_RATION);
+            move.setDirection(Direction.CURRENT_POINT);
+        }
+
         while (self.getActionPoints() >= stanceKey) {
 
             if (self.getActionPoints() >= self.getShootCost()) {
@@ -122,7 +118,11 @@ public final class MyStrategy implements Strategy {
                     );
 
                     if (canShoot && !trooper.isTeammate()) {
-                        move.setAction(ActionType.SHOOT);
+                        if (self.isHoldingGrenade()){
+                            move.setAction(ActionType.THROW_GRENADE);
+                        }else{
+                            move.setAction(ActionType.SHOOT);
+                        }
                         move.setX(trooper.getX());
                         move.setY(trooper.getY());
                         return;
