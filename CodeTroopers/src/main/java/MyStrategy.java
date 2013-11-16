@@ -15,7 +15,7 @@ public final class MyStrategy implements Strategy {
     //TODO write destination change
     @Override
     public void move(Trooper self, World world, Game game, Move move) {
-        if (world.getMoveIndex()==1){
+        if (world.getMoveIndex()<=1){
             cells = world.getCells();
             troopers = world.getTroopers();
         }
@@ -130,7 +130,7 @@ public final class MyStrategy implements Strategy {
                 }
             }
 
-            //TODO movement in case of unpassable terrain
+            //TODO movement in case of unpassable terrain and someone standing at the destination
             move.setAction(ActionType.MOVE);
             if ((xDest[0]-self.getX())>(yDest[0]-self.getY())&&xDest[0]-self.getX()<0) {
                 if (cells[self.getX()-1][self.getY()]==CellType.FREE) {
